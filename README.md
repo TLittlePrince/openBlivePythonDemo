@@ -1,2 +1,2 @@
 # openBlivePythonDemo
-BiliBili直播开放平台Python Demo
+简单的BiliBili直播开放平台Python Demo
