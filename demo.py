@@ -28,8 +28,8 @@ def on_msg(msg: dict) -> None:
 
 
 async def main():
-    a_key = "LXQqjVjZRs2hcGHpMjR2bDuA"  # 申请的access_key
-    a_secret = "MITKtf7BboK08hiaqCB2POOf9pZ4nZ"  # 申请的access_secret
+    a_key = ""  # 申请的access_key
+    a_secret = ""  # 申请的access_secret
     bili_app_id = 1649539569084  # 你的项目id
     user_code = 'BLMNUWXVJWU85'  # 主播的身份码
     open_blive = OpenBlive(a_key, a_secret)
