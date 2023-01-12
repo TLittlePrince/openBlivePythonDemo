@@ -104,7 +104,7 @@ class OpenBlive:
 
 
 if __name__ == '__main__':
-    a_key = "LXQqjVjZRs2hcGHpMjR2bDuA"
-    a_secret = "MITKtf7BboK08hiaqCB2POOf9pZ4nZ"
+    a_key = ""
+    a_secret = ""
     openBlive = OpenBlive(a_key, a_secret)
     openBlive.post_request('v2/app/start', {"code": "BLMNUWXVJWU85", "app_id": 1649539569084})
