@@ -28,10 +28,10 @@ def on_msg(msg: dict) -> None:
 
 
 async def main():
-    a_key = ""  # 申请的access_key
-    a_secret = ""  # 申请的access_secret
-    bili_app_id = 1649539569084  # 你的项目id
-    user_code = 'BLMNUWXVJWU85'  # 主播的身份码
+    a_key = "xxxxxxxxxxxxxxx"  # 申请的access_key
+    a_secret = "xxxxxxxxxxxxx"  # 申请的access_secret
+    bili_app_id = 100000000000  # 你的项目id
+    user_code = 'BLMNUWXVJWU00'  # 主播的身份码
     open_blive = OpenBlive(a_key, a_secret)
     start_info = open_blive.app_start(bili_app_id, user_code)  # 开启项目
     game_id = start_info['data']['game_info']['game_id']
@@ -40,7 +40,7 @@ async def main():
     wss_link = websocket_info['wss_link'][-1]
     asyncio.create_task(heartbeat(open_blive, game_id))  # 保持项目心跳
     blive_websocket = BliveWebsocket(wss_link, auth_body)
-    blive_websocket.set_on_message(on_msg)  # 设置消息回调
+    blive_websocket.on_message(on_msg)  # 设置消息回调
     await blive_websocket.connect()  # 保持连接
 
 

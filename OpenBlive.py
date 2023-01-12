@@ -62,8 +62,6 @@ class OpenBlive:
         :params: params: 要post的数据, 需包含app_id
         :return: 服务器返回内容
         """
-        # post_url = f"https://live-open.biliapi.com/{api}"
-        # params = '{' + f'"room_id":{room_id}, "app_id":{app_id}' + '}'
         params = json.dumps(params)
         print(f'传入的params: {params}')
 

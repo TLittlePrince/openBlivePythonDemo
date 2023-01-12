@@ -109,12 +109,16 @@ class BliveWebsocket:
         :param wss_link: websocket地址
         :param auth_body: app_start里返回的auth_body
         """
+        self.SC_del = lambda x: print(x)
+        self.new_guard = lambda x: print(x)
+        self.new_SC = lambda x: print(x)
+        self.new_gift = lambda x: print(x)
+        self.new_msg = lambda x: print(x)
         self.wss_link = wss_link
-        self.func = None
         self.proto = Proto()
         self.proto.body = auth_body
 
-    async def heartbeat(self, ws) -> None:
+    async def __heartbeat(self, ws) -> None:
         """
         自动弹幕心跳
 
@@ -133,31 +137,77 @@ class BliveWebsocket:
 
         :return: None
         """
+        callback = {
+            'LIVE_OPEN_PLATFORM_DM': self.new_msg,
+            'LIVE_OPEN_PLATFORM_SEND_GIFT': self.new_gift,
+            'LIVE_OPEN_PLATFORM_SUPER_CHAT': self.new_SC,
+            'LIVE_OPEN_PLATFORM_SUPER_CHAT_DEL': self.SC_del,
+            'LIVE_OPEN_PLATFORM_GUARD': self.new_guard,
+        }
         async with websockets.connect(self.wss_link) as ws:
             self.proto.op = 7
             buf = self.proto.pack()
             await ws.send(buf)
-            asyncio.create_task(self.heartbeat(ws))
+            asyncio.create_task(self.__heartbeat(ws))
             while True:
                 greeting = await ws.recv()
                 msg = self.proto.unpack(greeting)
                 # print(f"< {msg}")
                 if msg:
                     msg = json.loads(msg)
-                    self.func(msg)
+                    try:
+                        callback[msg['cmd']](msg)
+                    except KeyError:
+                        print(msg)
 
-    def set_on_message(self, func) -> None:
+    def on_message(self, func) -> None:
         """
         设置弹幕回调函数
 
         :param func: 自己写的函数, func(msg: dict)
         :return: None
         """
-        self.func = func
+        self.new_msg = func
+
+    def on_gift(self, func):
+        """
+        设置礼物回调函数
+
+        :param func: 自己写的函数, func(msg: dict)
+        :return: None
+        """
+        self.new_gift = func
+
+    def on_SC(self, func):
+        """
+        设置SC(醒目留言)回调函数
+
+        :param func: 自己写的函数, func(msg: dict)
+        :return: None
+        """
+        self.new_SC = func
+
+    def on_SC_del(self, func):
+        """
+        设置SC(醒目留言)被撤回的回调函数
+
+        :param func: 自己写的函数, func(msg: dict)
+        :return: None
+                """
+        self.SC_del = func
+
+    def on_guard(self, func):
+        """
+        设置大航海回调函数
+
+        :param func: 自己写的函数, func(msg: dict)
+        :return: None
+        """
+        self.new_guard = func
 
 
 if __name__ == '__main__':
     blive_websocket = BliveWebsocket('wss://broadcastlv.chat.bilibili.com:443/sub',
                                      '{"roomid":24701480,"protover":2,"uid":5247777763813928,"key":"odwDXbFVYR8ubO45WcV4vfQuNpJJABuD1jUdnKk95OPX3IGWg1nqtTHY7WC__S6N-4X68ksmj4S-44Sc_gUirzZTBddvhBzlI7mHKtMV6NKZsE6l4hZcrkp8WHo-maQORuviNn7PumtEgtM3lyl53LJiPOMEuZY=","group":"open"}')
-    blive_websocket.set_on_message(lambda x: print(x))
+    blive_websocket.on_message(lambda x: print(x))
     asyncio.get_event_loop().run_until_complete(blive_websocket.connect())
